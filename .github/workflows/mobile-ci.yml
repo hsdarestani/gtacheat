@@ -24,6 +24,17 @@ jobs:
       - name: Install dependencies
         working-directory: mobile
         run: flutter pub get
+      - name: Check iOS and Android build shell syntax
+        working-directory: mobile
+        run: |
+          bash -n scripts/build-ios.sh
+          bash -n scripts/build-android.sh
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path("scripts/build-ios.sh").read_text()
+          assert 'archive \\\n  CODE_SIGNING_ALLOWED=YES' in s, "Xcode archive signing flags must be in the same shell command"
+          assert 'PROVISIONING_PROFILE_SPECIFIER=$IOS_PROVISIONING_PROFILE_SPECIFIER"' not in s, "Do not globally provision Swift packages"
+          PY
       - name: Analyze Flutter source
         working-directory: mobile
         run: flutter analyze
