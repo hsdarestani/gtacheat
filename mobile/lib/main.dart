@@ -235,7 +235,7 @@ class _MainScreenState extends State<MainScreen> {
               onTap: () => _favorite(cheat),
               child: Container(
                 width: 32, height: 32,
-                decoration: BoxDecoration(color: bg.withOpacity(.88), borderRadius: BorderRadius.circular(8), border: Border.all(color: edge)),
+                decoration: BoxDecoration(color: bg.withValues(alpha: .88), borderRadius: BorderRadius.circular(8), border: Border.all(color: edge)),
                 child: Icon(saved.contains(cheat.id) ? Icons.star : Icons.star_border, size: 20, color: saved.contains(cheat.id) ? pink : Colors.white),
               ),
             )),
@@ -325,7 +325,7 @@ class _MainScreenState extends State<MainScreen> {
     final cardWidth = (limits.maxWidth - (cols - 1) * gap) / cols;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       if (tab == 0) Container(
-        height: 188, width: double.infinity,
+        height: 206, width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: const LinearGradient(colors: [Color(0xFF683653), Color(0xFF34253A), Color(0xFF17424A)]),
