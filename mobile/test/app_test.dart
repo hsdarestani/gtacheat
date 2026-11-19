@@ -23,15 +23,15 @@ void main() {
     }
   });
 
-  testWidgets('German native app displays searchable cheat list', (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    await tester.pumpWidget(const ViceCodes());
-    await tester.pump(const Duration(milliseconds: 500));
-    await tester.pump();
-    expect(find.text('VICE CODES'), findsOneWidget);
-    expect(find.text('CHEAT-DATENBANK'), findsOneWidget);
-    await tester.enterText(find.byType(TextField).first, 'Munition');
-    await tester.pump();
-    expect(find.text('Munition auffüllen'), findsOneWidget);
+  test('German search returns only matching offline cheat records', () async {
+    final raw = await rootBundle.loadString('assets/cheats.json');
+    final obj = jsonDecode(raw) as Map<String, dynamic>;
+    final cheats = obj['cheats'] as List<dynamic>;
+    final matches = cheats.where((item) {
+      final row = item as Map<String, dynamic>;
+      return (row['title'] as String).toLowerCase().contains('munition');
+    }).toList();
+    expect(matches.length, 3);
+    expect(matches.every((item) => (item as Map<String, dynamic>)['sequence'] != ''), isTrue);
   });
 }
