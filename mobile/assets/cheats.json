@@ -1,0 +1,182 @@
+{
+  "version": "2026-11-19",
+  "language": "de",
+  "disclaimer": "Inoffizieller Fan-Guide. Nicht mit Rockstar Games oder Take-Two verbunden. Eingaben basieren auf veröffentlichten Guides und sind nicht selbst im Spiel getestet.",
+  "sources": [
+    "https://www.gamesradar.com/games/grand-theft-auto/gta-6-cheats/",
+    "https://www.pcgamer.com/games/grand-theft-auto/gta-6-cheats-list/"
+  ],
+  "cheats": [
+    {
+      "id": "cheat-01",
+      "category": "Spieler",
+      "title": "250.000 $",
+      "description": "Sofort 250.000 Dollar erhalten.",
+      "unlock": "Story abschließen",
+      "sequence": "U R D L U L D R",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-02",
+      "category": "Spieler",
+      "title": "Betrunken",
+      "description": "Beide Hauptfiguren werden betrunken.",
+      "unlock": "2.500 $ für Alkohol ausgeben",
+      "sequence": "U L R U U L R U L R",
+      "source": "gamesradar"
+    },
+    {
+      "id": "cheat-03",
+      "category": "Spieler",
+      "title": "Heat-Level erhöhen",
+      "description": "Erhöht die regionale Fahndungsintensität.",
+      "unlock": "25-mal einer Drei-Sterne-Fahndung entkommen",
+      "sequence": "L D R D U D U",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-04",
+      "category": "Spieler",
+      "title": "Fahndungslevel erhöhen",
+      "description": "Mehr Fahndungssterne auf der gesamten Karte.",
+      "unlock": "50-mal einer Drei-Sterne-Fahndung entkommen",
+      "sequence": "L D R D U R U",
+      "source": "gamesradar"
+    },
+    {
+      "id": "cheat-05",
+      "category": "Spieler",
+      "title": "Unbegrenzter Fokus",
+      "description": "Die Fokusanzeige wird nicht mehr verbraucht.",
+      "unlock": "Story abschließen",
+      "sequence": "D U U D U D U D U R",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-06",
+      "category": "Spieler",
+      "title": "Körperschutz",
+      "description": "Füllt die Rüstung auf.",
+      "unlock": "100 Workouts abschließen",
+      "sequence": "D U L U U U U U D D",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-07",
+      "category": "Kampf",
+      "title": "Munition auffüllen",
+      "description": "Füllt die Munitionsvorräte auf.",
+      "unlock": "25 Bronze-Medaillen (PowerPyx); PC Gamer nennt 20",
+      "sequence": "D U R D L L U U D L",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-08",
+      "category": "Kampf",
+      "title": "Unendliche Munition",
+      "description": "Munition wird nicht verbraucht.",
+      "unlock": "25-mal mindestens Silber am Schießstand erreichen",
+      "sequence": "D U R D L L U D D D",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-09",
+      "category": "Kampf",
+      "title": "Ohne Nachladen",
+      "description": "Schießen ohne Nachladepause.",
+      "unlock": "25-mal Gold am Schießstand erreichen",
+      "sequence": "D U R D L L U D D U",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-10",
+      "category": "Kampf",
+      "title": "Aufprallkraft",
+      "description": "Treffer schleudern Ziele zurück.",
+      "unlock": "Story abschließen",
+      "sequence": "D U L L R D D U D",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-11",
+      "category": "Kampf",
+      "title": "Explodierende Bälle",
+      "description": "Sportbälle explodieren beim Aufprall.",
+      "unlock": "20 Feinde durch Explosionen treffen",
+      "sequence": "D U L L R D D U R",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-12",
+      "category": "Kampf",
+      "title": "Fahrzeug-Wucht",
+      "description": "Zusammenstöße mit Fahrzeugen schleudern Ziele weg.",
+      "unlock": "25 Gegner mit einem Fahrzeug töten",
+      "sequence": "D U L L R D L U D",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-13",
+      "category": "Fahrzeuge",
+      "title": "Maibatsu Boomazoom",
+      "description": "Motorrad erscheinen lassen.",
+      "unlock": "5 Shopping-Herausforderungen abschließen",
+      "sequence": "L U R D L L U L",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-14",
+      "category": "Fahrzeuge",
+      "title": "MTL Pumper",
+      "description": "Ein MTL Pumper erscheint.",
+      "unlock": "MTL Pumper im Fortschrittsmenü entdecken",
+      "sequence": "L U R D L R R U",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-15",
+      "category": "Fahrzeuge",
+      "title": "HVY Bulldozer",
+      "description": "Bulldozer erscheinen lassen.",
+      "unlock": "Bulldozer im Fortschrittsmenü entdecken",
+      "sequence": "L U R D L R R D",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-16",
+      "category": "Umwelt",
+      "title": "Wetter wechseln",
+      "description": "Zwischen Wetterbedingungen wechseln.",
+      "unlock": "Karte aufdecken (GamesRadar+); laut PowerPyx: Story beenden",
+      "sequence": "D R U D R U R",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-17",
+      "category": "Bildfilter",
+      "title": "Cataclysm",
+      "description": "Dunstiger Look mit Rauch.",
+      "unlock": "Martha's Vamos im Fortschrittsmenü entdecken",
+      "sequence": "D D U R R U L L R R",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-18",
+      "category": "Bildfilter",
+      "title": "Dollhouse",
+      "description": "Kräftige Farben und engerer Bildausschnitt.",
+      "unlock": "8 Stunden mit dem Partner verbringen",
+      "sequence": "D D U R R U L L D R",
+      "source": "gamesradar+pcgamer"
+    },
+    {
+      "id": "cheat-19",
+      "category": "Bildfilter",
+      "title": "Faded Glory",
+      "description": "Farbiger CRT-Fernseher-Look.",
+      "unlock": "50 Läden mit dem Partner ausrauben",
+      "sequence": "D D U R R U L L L R",
+      "source": "gamesradar+pcgamer"
+    }
+  ]
+}
