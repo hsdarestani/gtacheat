@@ -4,17 +4,17 @@
 **Source:** https://github.com/hsdarestani/gtacheat  
 **Hosting:** Cloudflare Worker `vicevault-gta` with custom hostname `gta.smarbiz.sbs`.
 
-## Aktueller Stand (19.11.2026) – Release v3.1.0 (nur Codes mit Eingabe)
+## Aktueller Stand (19.11.2026) – Release v3.2.2 (Stabilität & Cache-Fix)
 - Deutschsprachiger, mobiloptimierter GTA-VI-Cheat-Guide mit visuell reduzierter Oberfläche, originalem GTA-VI-Bildmaterial und eigenen thematischen SVG-Icons
 - Kein Pfeilsymbol in der UI, inklusive Cheat-Eingaben: Steuerkreuz-Tasten werden als OBEN, UNTEN, LINKS und RECHTS ausgeschrieben
 - Visuell kompakte Cheat-Karten; Beschreibungen, Bedingungen und Codes erscheinen erst im Detail-Dialog
-- **19 GTA-VI-Cheats mit Tastenkombination** in fünf Kategorien; **42 Einträge ohne Code vollständig entfernt** (17 bei GamesRadar+ und PowerPyx dokumentiert, 2 nur bei GamesRadar+ gemeldet)
+- **19 GTA-VI-Cheats mit Tastenkombination** in fünf Kategorien; **42 Einträge ohne Code vollständig entfernt** (alle 19 Einträge mit GamesRadar+ und PC Gamer (19.11.) abgeglichen; weiterhin kein Nachweis für mehr als 19 veröffentlichte Tastenkombinationen)
 - Alle sichtbaren Cheats haben vollständige D-Pad-Eingaben; ohne Eingabe erscheinen weder Karten noch Detailansichten. Unterschiedliche Angaben über Freischaltbedingungen werden als solche gekennzeichnet.
 - Filtern nach Kategorie, Suchfunktion, Sortierung, PS5-/Xbox-Auswahl
 - Merk- und Freischaltungslisten im Browser via `localStorage` (kein Login); bestehende Favoriten/Freischaltungen aus v3 werden über die ursprünglichen 61 Datensatz-Indizes sicher in v3.1 migriert
 - Anleitung, Leonida-Bereich, Quellenhinweise und offizielle GTA-VI-Promobilder von Rockstar Games
 - Installierbare PWA mit Browser-Offline-Cache
-- Live-Healthcheck: `/health` — `gtavi-de` v3.1.0
+- Live-Healthcheck: `/health` — `gtavi-de` v3.2.2
 - **Keine GTA-V-Codes, kein PC-Port, keine In-App-Zahlung**.
 
 ## Originalquellen
@@ -36,4 +36,12 @@ Die Worker-Datei `src/worker.js` wird direkt auf Cloudflare als ES-Module-Worker
 - **1365 px desktop** ohne Überlauf; 19 Karten und alle fünf Kategorien geprüft.
 - Datenmigration geprüft: ältere Indizes `[4,7,20,21,58,58]` werden zu `[4,5,11,18]` (nicht mehr existierende und doppelte Einträge fallen weg), vorhandene Daten bleiben erhalten.
 - Copy-to-Clipboard im echten Browser mit instrumentierter Clipboard-API geprüft. Eingabe wird als `OBEN · RECHTS · UNTEN · LINKS ...` kopiert.
-- Die veröffentlichten Codes sind mit journalistischen Guides abgeglichen. **Nicht alle Cheats wurden in einer echten GTA-VI-Spielsitzung durchgespielt; das kann der Web-Browser-Test nicht ersetzen.**
+- Die veröffentlichten Codes sind am 19.11.2026 mit [GamesRadar+](https://www.gamesradar.com/games/grand-theft-auto/gta-6-cheats/) und [PC Gamer](https://www.pcgamer.com/games/grand-theft-auto/gta-6-cheats-list/) abgeglichen; zusätzliche Code-Kandidaten ohne reproduzierbare Eingabe wurden nicht hinzugefügt.
+- Im Release v3.2 wurden die mobile Modaldarstellung, das Favoriten-Redraw, die alte PWA-Cache-Version und automatische Aktualisierungsprüfungen über `/health` korrigiert.
+- Die vier offiziellen Bilder werden mit begrenzter Breite angefragt (`imwidth=1280` statt `3840`). **Nicht alle Cheats wurden in einer echten GTA-VI-Spielsitzung durchgespielt; das kann der Web-Browser-Test nicht ersetzen.**
+
+## Cache und alte Tabs
+Bereits geöffnete v3-/v3.1-Tabs können vor dem nächsten Service-Worker-Update noch die alte UI zeigen. Der neue Service Worker räumt alte `gtavi-*` und `vicevault-*` Caches ab und navigiert offene Clients zur aktuellen UI. Nach Laden der v3.2.2-Oberfläche wird die Server-Version auf `pageshow`, `focus` und `visibilitychange` geprüft. Bei abweichender Version erfolgt eine Navigation zur aktuellen Ausgabe. Ein einmaliger Hard-Reload kann für alte Tabs dennoch erforderlich sein.
+
+## Verbleibende Grenzen
+Es wurden keine weiteren glaubwürdig dokumentierten GTA-VI-Cheat-Inputs über die 19 vorhanden hinaus gefunden (Recherchestand 19.11.2026). Der Live-Browser-QA prüft die Website, nicht die tatsächliche Eingabe der Cheats auf PlayStation/Xbox. Zusätzliche E2E-Tests für Desktop konnten im Cloudflare-Browser zwischenzeitlich wegen Laufzeitgrenzen nicht vollständig abgeschlossen werden; mobile Testbreiten 340 und 440 px bestanden.
