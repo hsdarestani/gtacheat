@@ -36,3 +36,19 @@ jobs:
       - name: Android debug smoke-build (no publishing)
         working-directory: mobile
         run: flutter build apk --debug
+      - name: Upload Android test APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vice-codes-android-debug
+          path: mobile/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
+          if-no-files-found: error
+      - name: Upload original app icon
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vice-codes-store-icon
+          path: mobile/store/icon-1024.png
+          retention-days: 7
+          if-no-files-found: error
