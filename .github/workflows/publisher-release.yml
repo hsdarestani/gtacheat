@@ -1,5 +1,5 @@
 name: Vice Codes — Build via A+ Publisher
-# iOS signing retry: normalize all Runner Xcode team settings and use scoped distribution profile.
+# iOS signing retry: explicitly patch actual Runner Release/Profile object IDs; validated in CI.
 
 on:
   workflow_dispatch:
