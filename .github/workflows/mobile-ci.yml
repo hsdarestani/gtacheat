@@ -1,0 +1,38 @@
+name: Vice Codes mobile validation
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/mobile-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native_flutter_test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate native project
+        working-directory: mobile
+        run: flutter create --platforms=android,ios --org=de.smarbiz --project-name=vicecodes .
+      - name: Install dependencies
+        working-directory: mobile
+        run: flutter pub get
+      - name: Analyze Flutter source
+        working-directory: mobile
+        run: flutter analyze
+      - name: Test offline database and interactions
+        working-directory: mobile
+        run: flutter test
+      - name: Generate original launch assets
+        working-directory: mobile
+        run: python3 scripts/create-icons.py
+      - name: Android debug smoke-build (no publishing)
+        working-directory: mobile
+        run: flutter build apk --debug
