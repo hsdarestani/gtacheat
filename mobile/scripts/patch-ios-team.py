@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Configure Publisher-managed Apple Team and App Store manual signing on generated Flutter iOS project.
+"""Apply Publisher-managed signing to the generated Runner Xcode project only.
 
-Publisher Cloud Mac installs the Apple Distribution certificate and provisioning
-profile into a temporary keychain. This script references only public profile
-names/UUIDs, never embeds private signing credentials.
+This never edits generated Flutter Swift Package project settings and never
+reads private certificate material. Publisher has already installed the Apple
+Distribution identity and the App Store provisioning profile on the Mac.
 """
 import os
 import plistlib
@@ -12,46 +12,45 @@ from pathlib import Path
 
 team = os.environ["APPLE_TEAM_ID"]
 if not re.fullmatch(r"[A-Z0-9]{10}", team):
-    raise SystemExit("APPLE_TEAM_ID must be a 10-character Apple team ID.")
-app_id = os.environ.get("IOS_BUNDLE_ID") or "de.smarbiz.vicecodes"
-pbx = Path("ios/Runner.xcodeproj/project.pbxproj")
-if not pbx.is_file():
-    raise SystemExit("iOS Xcode project missing. Run flutter create before signing.")
-data = pbx.read_text()
-# Flutter templates may serialize the team as an empty quoted string or a
-# previously selected value. Replace every Xcode build-setting occurrence,
-# including Release and Profile; otherwise the target can stay unsigned.
-data, team_settings = re.subn(
-    r"\\bDEVELOPMENT_TEAM\\s*=\\s*[^;]*;",
-    "DEVELOPMENT_TEAM = " + team + ";",
+    raise SystemExit("APPLE_TEAM_ID must have ten uppercase letters or digits.")
+bundle = os.environ.get("IOS_BUNDLE_ID") or "de.smarbiz.vicecodes"
+project = Path("ios/Runner.xcodeproj/project.pbxproj")
+if not project.is_file():
+    raise SystemExit("Missing generated Runner Xcode project.")
+
+data = project.read_text()
+# Handle both blank/quoted and existing team settings in Debug, Release and Profile.
+data, replaced = re.subn(
+    r"\bDEVELOPMENT_TEAM\s*=\s*[^;]*;",
+    f"DEVELOPMENT_TEAM = {team};",
     data,
 )
-if team_settings == 0:
+if replaced == 0:
     data = data.replace(
         "CODE_SIGN_STYLE = Automatic;",
-        "CODE_SIGN_STYLE = Automatic;\\n\\t\\t\\t\\tDEVELOPMENT_TEAM = " + team + ";",
+        f"CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = {team};",
     )
-if "DEVELOPMENT_TEAM = " + team + ";" not in data or re.search(
-    r"\\bDEVELOPMENT_TEAM\\s*=\\s*(?!"+re.escape(team)+r"\\b)[^;]*;",
-    data,
-):
-    raise SystemExit("Unable to set Apple Team consistently in Runner project.")
+# The generated Runner project must not retain any empty or other-team value.
+team_values = re.findall(r"\bDEVELOPMENT_TEAM\s*=\s*([^;]*);", data)
+if not team_values or any(v.strip() != team for v in team_values):
+    raise SystemExit("Could not set Apple development team in every Runner build setting.")
 
-sign_style = os.environ.get("IOS_SIGNING_STYLE", "").strip()
-profile = os.environ.get("IOS_PROVISIONING_PROFILE_SPECIFIER", "").strip()
-if sign_style.lower() == "manual":
+if os.environ.get("IOS_SIGNING_STYLE", "").lower() == "manual":
+    profile = os.environ.get("IOS_PROVISIONING_PROFILE_SPECIFIER", "").strip()
     if not profile:
-        raise SystemExit("Publisher Mac selected manual signing without an App Store profile.")
+        raise SystemExit("Publisher manual App Store profile is missing.")
+    if "CODE_SIGN_STYLE = Automatic;" not in data and "CODE_SIGN_STYLE = Manual;" not in data:
+        raise SystemExit("Runner Xcode template lacks supported signing style.")
     escaped = profile.replace('"', '\\"')
     data = data.replace(
         "CODE_SIGN_STYLE = Automatic;",
-        'CODE_SIGN_STYLE = Manual;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "' + escaped + '";'
+        'CODE_SIGN_STYLE = Manual;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "' + escaped + '";',
     )
-    # Only the generated Runner Xcode project is edited, never Swift Packages.
-    # Release signing must select Apple Distribution in the project itself.
+    # Keep the Apple Distribution identity scoped to Runner project, not
+    # globally on the command line where it would affect Swift dependencies.
     data = re.sub(
-        r'(CODE_SIGN_IDENTITY(?:\\[sdk=iphoneos\\*\\])?\\s*=\\s*)[^;]+;',
-        r'\\1"Apple Distribution";',
+        r'(CODE_SIGN_IDENTITY(?:\[sdk=iphoneos\*\])?\s*=\s*)[^;]+;',
+        r'\1"Apple Distribution";',
         data,
     )
     if 'CODE_SIGN_IDENTITY = "Apple Distribution";' not in data:
@@ -60,18 +59,21 @@ if sign_style.lower() == "manual":
             'CODE_SIGN_STYLE = Manual;\n\t\t\t\tCODE_SIGN_IDENTITY = "Apple Distribution";',
         )
     if "PROVISIONING_PROFILE_SPECIFIER =" not in data:
-        raise SystemExit("Could not set manual code signing profile in Xcode project.")
-    export = {
-        "method": "app-store-connect",
-        "signingStyle": "manual",
-        "teamID": team,
-        "signingCertificate": "Apple Distribution",
-        "provisioningProfiles": {app_id: profile},
-        "manageAppVersionAndBuildNumber": False,
-        "uploadBitcode": False,
-    }
-    with Path("ios/ExportOptions.plist").open("wb") as fp:
-        plistlib.dump(export, fp)
+        raise SystemExit("Could not set Runner App Store profile.")
+    with Path("ios/ExportOptions.plist").open("wb") as output:
+        plistlib.dump(
+            {
+                "method": "app-store-connect",
+                "signingStyle": "manual",
+                "teamID": team,
+                "signingCertificate": "Apple Distribution",
+                "provisioningProfiles": {bundle: profile},
+                "manageAppVersionAndBuildNumber": False,
+            },
+            output,
+        )
 else:
-    print("Publisher Mac manual signing not requested; default Xcode signing settings retained.")
-pbx.write_text(data)
+    print("Automatic Xcode signing selected; manual profile not configured.")
+
+project.write_text(data)
+print("Runner Apple team and App Store signing configured.")
