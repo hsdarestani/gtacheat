@@ -38,14 +38,14 @@ flutter build ios --release --no-codesign \
   --build-number "${APP_BUILD_NUMBER:-1}"
 
 mkdir -p build/ios/archive build/ios/ipa
+# The Runner target already has manual signing/profile in its Xcode project.
+# Do NOT pass PROVISIONING_PROFILE_SPECIFIER as a global build setting,
+# because Swift Package targets cannot use app provisioning profiles.
 xcodebuild -workspace ios/Runner.xcworkspace \
   -scheme Runner -configuration Release \
   -destination 'generic/platform=iOS' \
   -archivePath build/ios/archive/Runner.xcarchive \
   archive \
-  # The Runner target already has manual signing/profile in its Xcode project.
-  # Do NOT pass PROVISIONING_PROFILE_SPECIFIER as a global build setting;
-  # Swift Package targets (share_plus, url_launcher, etc.) cannot use profiles.
   CODE_SIGNING_ALLOWED=YES \
   "DEVELOPMENT_TEAM=$APPLE_TEAM_ID" \
   'CODE_SIGN_IDENTITY=Apple Distribution' \
