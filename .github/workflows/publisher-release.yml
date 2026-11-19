@@ -1,5 +1,5 @@
 name: Vice Codes — Build via A+ Publisher
-# iOS signing retry: use direct Xcode archive/export with Publisher-managed keychain.
+# iOS signing retry: Runner-only provisioning profile; no profile on Swift packages.
 
 on:
   workflow_dispatch:
