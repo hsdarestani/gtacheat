@@ -4,15 +4,17 @@
 **Source:** https://github.com/hsdarestani/gtacheat  
 **Hosting:** Cloudflare Worker `vicevault-gta` with custom hostname `gta.smarbiz.sbs`.
 
-## Aktueller Stand (19.11.2026)
-- Deutschsprachiger, mobiloptimierter GTA-VI-Cheat-Guide
+## Aktueller Stand (19.11.2026) – Redesign v3.0.0
+- Deutschsprachiger, mobiloptimierter GTA-VI-Cheat-Guide mit visuell reduzierter Oberfläche, originalem GTA-VI-Bildmaterial und eigenen thematischen SVG-Icons
+- Kein Pfeilsymbol in der UI, inklusive Cheat-Eingaben: Steuerkreuz-Tasten werden als OBEN, UNTEN, LINKS und RECHTS ausgeschrieben
+- Visuell kompakte Cheat-Karten; Beschreibungen, Bedingungen und Codes erscheinen erst im Detail-Dialog
 - **61** GTA-VI-Cheats in fünf Kategorien, **19** veröffentlichte Tastenkombinationen (17 in beiden geprüften Medien, zwei neu nur bei GamesRadar+)
 - Bedingungen zur Freischaltung jedes Cheats; unbekannte Codes bleiben ausdrücklich als offen gekennzeichnet
 - Filtern nach Kategorie, Suchfunktion, Sortierung, PS5-/Xbox-Auswahl
 - Merk- und Freischaltungslisten im Browser via `localStorage` (kein Login)
 - Anleitung, Leonida-Bereich, Quellenhinweise und offizielle GTA-VI-Promobilder von Rockstar Games
 - Installierbare PWA mit Browser-Offline-Cache
-- Live-Healthcheck: `/health` — `gtavi-de` v2.0.0
+- Live-Healthcheck: `/health` — `gtavi-de` v3.0.0
 - **Keine GTA-V-Codes, kein PC-Port, keine In-App-Zahlung**.
 
 ## Originalquellen
@@ -30,4 +32,4 @@ Inoffizieller Fan-Guide; keine Verbindung zu Rockstar Games oder Take-Two. Marke
 Die Worker-Datei `src/worker.js` wird direkt auf Cloudflare als ES-Module-Worker veröffentlicht; das Custom Domain Mapping ist bereits eingerichtet. Die GitHub-Repositoryversion ist die Referenzquelle; aktuell besteht **kein automatisches GitHub-Deployment**. Änderungen müssen ausdrücklich erneut über Cloudflare veröffentlicht werden. Cloudflare-Konto/Zone sind vorhanden.
 
 ## Teststatus
-Browser Rendering geprüft bei 390 px: 61 Karten sichtbar, Suche, Kategorien, Filter, Konsolenwechsel, Merk- und Freischaltungslisten, Anleitung, Leonida- und Quellenseiten erfolgreich. Keine horizontale Überbreite bei 390 px. Der `/health`-Endpunkt wurde beim initialen Deployment validiert; erneute Prüfung für v2 vorgesehen.
+Browser Rendering nach v3 bei 390 px geprüft: 61 Karten, Suche, Kategorien, Konsolenwechsel, Favoriten, Detail-Dialog, Codeanzeige ohne Pfeilsymbole, Freischaltungen, Anleitung, Leonida und Quellen erfolgreich. Keine horizontale Überbreite bei 390 px. Der `/health`-Endpunkt wurde beim initialen Deployment validiert; erneute Prüfung für v2 vorgesehen.
