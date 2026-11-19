@@ -1,0 +1,55 @@
+{
+  "publisher_app": {
+    "name": "Vice Codes",
+    "slug": "vice-codes",
+    "client_name": "",
+    "platform": "both",
+    "framework": "flutter",
+    "status": "setup",
+    "package_name": "de.smarbiz.vicecodes",
+    "bundle_id": "de.smarbiz.vicecodes",
+    "repository_url": "https://github.com/hsdarestani/gtacheat",
+    "default_branch": "main",
+    "privacy_policy_url": "",
+    "support_url": "https://gta.smarbiz.sbs/",
+    "marketing_url": "https://gta.smarbiz.sbs/",
+    "category": "Entertainment",
+    "requires_login": false,
+    "build_config": {
+      "android_command": "bash mobile/scripts/build-android.sh",
+      "android_artifact": "mobile/build/app/outputs/bundle/release/*.aab",
+      "ios_command": "bash mobile/scripts/build-ios.sh",
+      "ios_artifact": "mobile/build/ios/ipa/*.ipa",
+      "env": {}
+    }
+  },
+  "localization_de_DE": {
+    "locale": "de-DE",
+    "title": "Vice Codes – GTA VI Guide",
+    "subtitle": "Cheats für PS5 und Xbox",
+    "short_description": "Inoffizieller GTA-VI-Cheat-Guide mit 19 Codes, Offline-Suche und Favoriten.",
+    "full_description": "Vice Codes ist ein unabhängiger deutschsprachiger Fan-Guide für GTA VI.\n\n• 19 recherchierte Tastenkombinationen für PlayStation 5 und Xbox Series X|S\n• Vollständig offline durchsuchbare Cheat-Sammlung\n• Kategorien für Spieler, Kampf, Fahrzeuge, Umwelt und Bildfilter\n• Freischaltbedingungen für jeden Code\n• Persönliche Favoriten und Fortschritt nur auf deinem Gerät\n• Tastenkombinationen kopieren oder über die native Teilen-Funktion versenden\n\nAlle Informationen beziehen sich auf veröffentlichte Guides. Nicht alle Kombinationen wurden unabhängig im Spiel getestet.\n\nInoffizielles Fan-Projekt. Keine Verbindung zu Rockstar Games oder Take-Two Interactive.",
+    "keywords": "GTA 6,Cheats,Codes,PS5,Xbox,Leonida,Fan Guide",
+    "promotional_text": "Cheat-Codes offline finden, merken und teilen.",
+    "release_notes": "Erste Version mit 19 veröffentlichten GTA-VI-Tastenkombinationen und Offline-Favoriten."
+  },
+  "release": {
+    "version_name": "1.0.0",
+    "build_number": 1,
+    "source_branch": "main",
+    "android_track": "internal",
+    "android_rollout": 1,
+    "ios_release_type": "manual",
+    "auto_submit": false
+  },
+  "review_blockers": [
+    "Login to Publisher admin to create application, link store accounts and configure signing",
+    "Owner must confirm app's legal entity and provide a real GDPR privacy-policy URL",
+    "Google Play Console and App Store Connect need first-time app records and agreements",
+    "Upload genuine screenshots and generated original app icon",
+    "Android requires persistent upload signing key; iOS requires distribution certificate and provisioning profile",
+    "Build real signed AAB and IPA; test on devices and TestFlight/Play internal",
+    "Verify GTA VI cheat code inputs in the actual game and review trademark/third-party content rights",
+    "Submit only after store readiness gates pass"
+  ]
+}
