@@ -26,11 +26,12 @@ void main() {
   testWidgets('German native app displays searchable cheat list', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const ViceCodes());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
     expect(find.text('VICE CODES'), findsOneWidget);
     expect(find.text('CHEAT-DATENBANK'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, 'Munition');
-    await tester.pumpAndSettle();
+    await tester.pump();
     expect(find.text('Munition auffüllen'), findsOneWidget);
   });
 }
