@@ -42,7 +42,7 @@ sample = '''
             };
             name = Release;
         };
-        DDDDDDDDDDDDDDDDDDDDDDDD /* Profile */ = {
+        DDDDDDDDDDDDDDDDDDDDDDDDDD /* Profile */ = {
             isa = XCBuildConfiguration;
             buildSettings = {
                 PRODUCT_BUNDLE_IDENTIFIER = de.smarbiz.vicecodes;
@@ -68,7 +68,7 @@ sample = '''
             isa = XCConfigurationList;
             buildConfigurations = (
                 CCCCCCCCCCCCCCCCCCCCCCCC /* Release */,
-                DDDDDDDDDDDDDDDDDDDDDD /* Profile */,
+                DDDDDDDDDDDDDDDDDDDDDDDD /* Profile */,
             );
         };
 /* End XCConfigurationList section */
