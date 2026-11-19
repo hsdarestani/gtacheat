@@ -29,6 +29,8 @@ jobs:
         run: |
           bash -n scripts/build-ios.sh
           bash -n scripts/build-android.sh
+          python3 -m py_compile scripts/patch-ios-team.py
+          python3 scripts/test-ios-patch.py
           python3 - <<'PY'
           from pathlib import Path
           s = Path("scripts/build-ios.sh").read_text()
