@@ -1,5 +1,5 @@
 name: Vice Codes — Build via A+ Publisher
-# iOS signing retry: ensure Xcode archive receives scoped signing and team args.
+# iOS signing retry: configure Runner-only Distribution profile after unsigned Flutter build.
 
 on:
   workflow_dispatch:
