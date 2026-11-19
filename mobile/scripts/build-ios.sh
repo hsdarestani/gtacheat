@@ -48,6 +48,7 @@ xcodebuild -workspace ios/Runner.xcworkspace \
   -destination 'generic/platform=iOS' \
   -archivePath build/ios/archive/Runner.xcarchive \
   archive \
+  "DEVELOPMENT_TEAM=$APPLE_TEAM_ID" \
   "OTHER_CODE_SIGN_FLAGS=--keychain $IOS_SIGNING_KEYCHAIN"
 
 xcodebuild -exportArchive \
