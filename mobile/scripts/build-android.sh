@@ -7,11 +7,16 @@ command -v python3 >/dev/null || { echo "Python 3 required"; exit 2; }
 flutter create --platforms=android,ios --org=de.smarbiz --project-name=vicecodes .
 flutter pub get
 python3 scripts/create-icons.py
-if [[ -z "${ANDROID_KEYSTORE_BASE64:-}" || -z "${ANDROID_KEYSTORE_PASSWORD:-}" || -z "${ANDROID_KEY_ALIAS:-}" || -z "${ANDROID_KEY_PASSWORD:-}" ]]; then
-  echo "Android release signing environment variables missing. Configure encrypted signing material in Publisher agent."
-  exit 3
+if [[ -z "${ANDROID_KEYSTORE_PASSWORD:-}" || -z "${ANDROID_KEY_ALIAS:-}" || -z "${ANDROID_KEY_PASSWORD:-}" ]]; then
+  echo "Missing Android signing passwords/alias from Publisher agent"; exit 3
 fi
-printf "%s" "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+if [[ -n "${ANDROID_KEYSTORE_PATH:-}" && -f "$ANDROID_KEYSTORE_PATH" ]]; then
+  cp "$ANDROID_KEYSTORE_PATH" android/app/upload-keystore.jks
+elif [[ -n "${ANDROID_KEYSTORE_BASE64:-}" ]]; then
+  printf "%s" "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+else
+  echo "Publisher upload keystore unavailable. The build cannot be signed."; exit 3
+fi
 chmod 600 android/app/upload-keystore.jks
 trap 'rm -f android/app/upload-keystore.jks' EXIT
 python3 scripts/patch-gradle.py
