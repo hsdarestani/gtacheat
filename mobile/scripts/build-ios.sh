@@ -43,11 +43,12 @@ xcodebuild -workspace ios/Runner.xcworkspace \
   -destination 'generic/platform=iOS' \
   -archivePath build/ios/archive/Runner.xcarchive \
   archive \
+  # The Runner target already has manual signing/profile in its Xcode project.
+  # Do NOT pass PROVISIONING_PROFILE_SPECIFIER as a global build setting;
+  # Swift Package targets (share_plus, url_launcher, etc.) cannot use profiles.
   CODE_SIGNING_ALLOWED=YES \
-  CODE_SIGN_STYLE=Manual \
   "DEVELOPMENT_TEAM=$APPLE_TEAM_ID" \
   'CODE_SIGN_IDENTITY=Apple Distribution' \
-  "PROVISIONING_PROFILE_SPECIFIER=$IOS_PROVISIONING_PROFILE_SPECIFIER" \
   "OTHER_CODE_SIGN_FLAGS=--keychain $IOS_SIGNING_KEYCHAIN"
 
 xcodebuild -exportArchive \
