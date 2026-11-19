@@ -1,23 +1,33 @@
-# ViceVault — GTA Cheats & Guides
+# GTA VI Cheats – Deutscher Guide
 
-An original, fast, responsive fan-made GTA companion built for Cloudflare Workers. Live target: **https://gta.smarbiz.sbs/**
+**Live:** https://gta.smarbiz.sbs/  
+**Source:** https://github.com/hsdarestani/gtacheat  
+**Hosting:** Cloudflare Worker `vicevault-gta` with custom hostname `gta.smarbiz.sbs`.
 
-## Features
-- Searchable GTA V Story Mode cheat database (34 cheats), with PC commands and dialable phone numbers for modern PlayStation / Xbox consoles
-- Instant game / platform / category navigation, favorites stored in the browser, copy-to-clipboard
-- Expanded usage details for important cheats; instructions and warnings
-- GTA VI launch tracker that does **not** invent or republish unverified GTA VI cheat codes
-- Mobile-first responsive UI, installable PWA and basic offline cache, no account needed
-- Simple health check at `/health`
+## Aktueller Stand (19.11.2026)
+- Deutschsprachiger, mobiloptimierter GTA-VI-Cheat-Guide
+- **61** GTA-VI-Cheats in fünf Kategorien, **19** veröffentlichte Tastenkombinationen (17 in beiden geprüften Medien, zwei neu nur bei GamesRadar+)
+- Bedingungen zur Freischaltung jedes Cheats; unbekannte Codes bleiben ausdrücklich als offen gekennzeichnet
+- Filtern nach Kategorie, Suchfunktion, Sortierung, PS5-/Xbox-Auswahl
+- Merk- und Freischaltungslisten im Browser via `localStorage` (kein Login)
+- Anleitung, Leonida-Bereich, Quellenhinweise und offizielle GTA-VI-Promobilder von Rockstar Games
+- Installierbare PWA mit Browser-Offline-Cache
+- Live-Healthcheck: `/health` — `gtavi-de` v2.0.0
+- **Keine GTA-V-Codes, kein PC-Port, keine In-App-Zahlung**.
 
-## Architecture
-Single Cloudflare Worker module at `src/worker.js`. No backend database, paid subscriptions, third-party tracking, or user accounts in MVP. Content is versioned in source code.
+## Originalquellen
+- GamesRadar+: https://www.gamesradar.com/games/grand-theft-auto/gta-6-cheats/
+- PowerPyx: https://www.powerpyx.com/gta-6-all-cheats/
+- Rockstar Games (offizielle Medien): https://www.rockstargames.com/VI/media/screenshots
+- Rockstar Release: https://www.rockstargames.com/de/newswire/article/39akk424a9oo53/grand-theft-auto-vi-now-available
+
+Cheat-Codes sind faktische Eingaben; alle Beschreibungen und Bedienhinweise sind eigenständig in deutscher Sprache verfasst. **Wir haben nicht persönlich sämtliche Eingaben im Spiel getestet.** Cheats sind laut Guides erst nach Abschluss der Story und jeweiliger Freischaltung nutzbar.
+
+## Lizenz / geistiges Eigentum
+Inoffizieller Fan-Guide; keine Verbindung zu Rockstar Games oder Take-Two. Marken und offizielle Screenshots gehören den Rechteinhabern. Das Einbinden offizieller Rockstar-Grafiken in ein **kommerzielles Produkt** kann eine separate Lizenz erfordern; eine Quellenangabe allein ersetzt diese nicht. Vor Monetarisierung Bild- und Markenrechte prüfen: https://support.rockstargames.com/articles/7bNaeoMFTV0iUDGhStTXvz/policy-on-posting-copyrighted-rockstar-games-material.
 
 ## Deployment
-Worker name: `vicevault-gta`; Cloudflare custom hostname: `gta.smarbiz.sbs`. This version was directly deployed using the connected Cloudflare account. Future GitHub commits are **not automatically deployed**; use the Cloudflare API / CLI or explicitly configure deployment credentials in GitHub Actions.
+Die Worker-Datei `src/worker.js` wird direkt auf Cloudflare als ES-Module-Worker veröffentlicht; das Custom Domain Mapping ist bereits eingerichtet. Die GitHub-Repositoryversion ist die Referenzquelle; aktuell besteht **kein automatisches GitHub-Deployment**. Änderungen müssen ausdrücklich erneut über Cloudflare veröffentlicht werden. Cloudflare-Konto/Zone sind vorhanden.
 
-## Data notes
-GTA V command and phone-number facts cross-checked against [PC Gamer](https://www.pcgamer.com/gta-5-cheats/) and [GTA BOOM](https://www.gtaboom.com/every-gta-5-cheat-console-code-and-phone-number-0740/). No third-party screenshots or copied editorial writing. Additional vehicle-spawn codes have unlock requirements. GTA VI codes require independent verification before publication.
-
-## Disclaimer
-Independent, unofficial fan project. Not affiliated with, sponsored by, or endorsed by Rockstar Games or Take-Two Interactive. GTA and related names are trademarks of their respective owners.
+## Teststatus
+Browser Rendering geprüft bei 390 px: 61 Karten sichtbar, Suche, Kategorien, Filter, Konsolenwechsel, Merk- und Freischaltungslisten, Anleitung, Leonida- und Quellenseiten erfolgreich. Keine horizontale Überbreite bei 390 px. Der `/health`-Endpunkt wurde beim initialen Deployment validiert; erneute Prüfung für v2 vorgesehen.
