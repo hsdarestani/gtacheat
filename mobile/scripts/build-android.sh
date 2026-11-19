@@ -7,6 +7,7 @@ command -v python3 >/dev/null || { echo "Python 3 required"; exit 2; }
 flutter create --platforms=android,ios --org=de.smarbiz --project-name=vicecodes .
 flutter pub get
 python3 scripts/create-icons.py
+python3 scripts/patch-native-metadata.py
 if [[ -z "${ANDROID_KEYSTORE_PASSWORD:-}" || -z "${ANDROID_KEY_ALIAS:-}" || -z "${ANDROID_KEY_PASSWORD:-}" ]]; then
   echo "Missing Android signing passwords/alias from Publisher agent"; exit 3
 fi
