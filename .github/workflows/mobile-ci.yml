@@ -34,7 +34,8 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           s = Path("scripts/build-ios.sh").read_text()
-          assert 'archive \\\n  CODE_SIGNING_ALLOWED=YES' in s, "Xcode archive signing flags must be in the same shell command"
+          assert '"DEVELOPMENT_TEAM=$APPLE_TEAM_ID"' in s, "Xcode archive team must be explicit"
+          assert "'CODE_SIGN_IDENTITY=Apple Distribution'" not in s, "Do not globally override Swift package signing identities"
           assert 'PROVISIONING_PROFILE_SPECIFIER=$IOS_PROVISIONING_PROFILE_SPECIFIER"' not in s, "Do not globally provision Swift packages"
           PY
       - name: Analyze Flutter source
