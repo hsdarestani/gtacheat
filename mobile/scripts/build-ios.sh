@@ -26,8 +26,6 @@ flutter create --platforms=android,ios --org=de.smarbiz --project-name=vicecodes
 flutter pub get
 python3 scripts/create-icons.py
 python3 scripts/patch-native-metadata.py
-python3 scripts/patch-ios-team.py
-[[ -f ios/ExportOptions.plist ]] || { echo "Manual App Store export settings missing"; exit 3; }
 
 # Flutter's "build ipa" performs a device-development-certificate preflight that
 # fails on an otherwise valid distribution-only ephemeral keychain. Compile
@@ -36,6 +34,10 @@ python3 scripts/patch-ios-team.py
 flutter build ios --release --no-codesign \
   --build-name "${APP_VERSION_NAME:-1.0.0}" \
   --build-number "${APP_BUILD_NUMBER:-1}"
+# Flutter may regenerate the Xcode project during unsigned compilation.
+# Apply manual Distribution signing afterwards, only to the Runner project.
+python3 scripts/patch-ios-team.py
+[[ -f ios/ExportOptions.plist ]] || { echo "Manual App Store export settings missing"; exit 3; }
 
 mkdir -p build/ios/archive build/ios/ipa
 # The Runner target already has manual signing/profile in its Xcode project.
@@ -46,9 +48,6 @@ xcodebuild -workspace ios/Runner.xcworkspace \
   -destination 'generic/platform=iOS' \
   -archivePath build/ios/archive/Runner.xcarchive \
   archive \
-  CODE_SIGNING_ALLOWED=YES \
-  "DEVELOPMENT_TEAM=$APPLE_TEAM_ID" \
-  'CODE_SIGN_IDENTITY=Apple Distribution' \
   "OTHER_CODE_SIGN_FLAGS=--keychain $IOS_SIGNING_KEYCHAIN"
 
 xcodebuild -exportArchive \
