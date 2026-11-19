@@ -34,6 +34,18 @@ if sign_style.lower() == "manual":
         "CODE_SIGN_STYLE = Automatic;",
         'CODE_SIGN_STYLE = Manual;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "' + escaped + '";'
     )
+    # Only the generated Runner Xcode project is edited, never Swift Packages.
+    # Release signing must select Apple Distribution in the project itself.
+    data = re.sub(
+        r'(CODE_SIGN_IDENTITY(?:\\[sdk=iphoneos\\*\\])?\\s*=\\s*)[^;]+;',
+        r'\\1"Apple Distribution";',
+        data,
+    )
+    if 'CODE_SIGN_IDENTITY = "Apple Distribution";' not in data:
+        data = data.replace(
+            "CODE_SIGN_STYLE = Manual;",
+            'CODE_SIGN_STYLE = Manual;\n\t\t\t\tCODE_SIGN_IDENTITY = "Apple Distribution";',
+        )
     if "PROVISIONING_PROFILE_SPECIFIER =" not in data:
         raise SystemExit("Could not set manual code signing profile in Xcode project.")
     export = {
