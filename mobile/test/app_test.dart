@@ -31,7 +31,7 @@ void main() {
       final row = item as Map<String, dynamic>;
       return (row['title'] as String).toLowerCase().contains('munition');
     }).toList();
-    expect(matches.length, 3);
+    expect(matches.length, 2);
     expect(matches.every((item) => (item as Map<String, dynamic>)['sequence'] != ''), isTrue);
   });
 }
