@@ -1,4 +1,5 @@
 name: Vice Codes — Build via A+ Publisher
+# iOS signing retry: use direct Xcode archive/export with Publisher-managed keychain.
 
 on:
   workflow_dispatch:
