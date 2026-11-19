@@ -18,11 +18,24 @@ pbx = Path("ios/Runner.xcodeproj/project.pbxproj")
 if not pbx.is_file():
     raise SystemExit("iOS Xcode project missing. Run flutter create before signing.")
 data = pbx.read_text()
-data = re.sub(r"DEVELOPMENT_TEAM = [A-Z0-9]*;", "DEVELOPMENT_TEAM = " + team + ";", data)
-if "DEVELOPMENT_TEAM = " + team + ";" not in data:
-    data = data.replace("CODE_SIGN_STYLE = Automatic;", "CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = " + team + ";")
-if "DEVELOPMENT_TEAM = " + team + ";" not in data:
-    raise SystemExit("Unable to set Apple Team in Runner project.")
+# Flutter templates may serialize the team as an empty quoted string or a
+# previously selected value. Replace every Xcode build-setting occurrence,
+# including Release and Profile; otherwise the target can stay unsigned.
+data, team_settings = re.subn(
+    r"\\bDEVELOPMENT_TEAM\\s*=\\s*[^;]*;",
+    "DEVELOPMENT_TEAM = " + team + ";",
+    data,
+)
+if team_settings == 0:
+    data = data.replace(
+        "CODE_SIGN_STYLE = Automatic;",
+        "CODE_SIGN_STYLE = Automatic;\\n\\t\\t\\t\\tDEVELOPMENT_TEAM = " + team + ";",
+    )
+if "DEVELOPMENT_TEAM = " + team + ";" not in data or re.search(
+    r"\\bDEVELOPMENT_TEAM\\s*=\\s*(?!"+re.escape(team)+r"\\b)[^;]*;",
+    data,
+):
+    raise SystemExit("Unable to set Apple Team consistently in Runner project.")
 
 sign_style = os.environ.get("IOS_SIGNING_STYLE", "").strip()
 profile = os.environ.get("IOS_PROVISIONING_PROFILE_SPECIFIER", "").strip()
