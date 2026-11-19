@@ -4,7 +4,7 @@
 **Source:** https://github.com/hsdarestani/gtacheat  
 **Hosting:** Cloudflare Worker `vicevault-gta` with custom hostname `gta.smarbiz.sbs`.
 
-## Aktueller Stand (19.11.2026) – Release v3.2.2 (Stabilität & Cache-Fix)
+## Aktueller Stand (19.11.2026) – Release v3.2.4 (Refresh-Loop behoben)
 - Deutschsprachiger, mobiloptimierter GTA-VI-Cheat-Guide mit visuell reduzierter Oberfläche, originalem GTA-VI-Bildmaterial und eigenen thematischen SVG-Icons
 - Kein Pfeilsymbol in der UI, inklusive Cheat-Eingaben: Steuerkreuz-Tasten werden als OBEN, UNTEN, LINKS und RECHTS ausgeschrieben
 - Visuell kompakte Cheat-Karten; Beschreibungen, Bedingungen und Codes erscheinen erst im Detail-Dialog
@@ -14,7 +14,7 @@
 - Merk- und Freischaltungslisten im Browser via `localStorage` (kein Login); bestehende Favoriten/Freischaltungen aus v3 werden über die ursprünglichen 61 Datensatz-Indizes sicher in v3.1 migriert
 - Anleitung, Leonida-Bereich, Quellenhinweise und offizielle GTA-VI-Promobilder von Rockstar Games
 - Installierbare PWA mit Browser-Offline-Cache
-- Live-Healthcheck: `/health` — `gtavi-de` v3.2.2
+- Live-Healthcheck: `/health` — `gtavi-de` v3.2.4
 - **Keine GTA-V-Codes, kein PC-Port, keine In-App-Zahlung**.
 
 ## Originalquellen
@@ -40,8 +40,8 @@ Die Worker-Datei `src/worker.js` wird direkt auf Cloudflare als ES-Module-Worker
 - Im Release v3.2 wurden die mobile Modaldarstellung, das Favoriten-Redraw, die alte PWA-Cache-Version und automatische Aktualisierungsprüfungen über `/health` korrigiert.
 - Die vier offiziellen Bilder werden mit begrenzter Breite angefragt (`imwidth=1280` statt `3840`). **Nicht alle Cheats wurden in einer echten GTA-VI-Spielsitzung durchgespielt; das kann der Web-Browser-Test nicht ersetzen.**
 
-## Cache und alte Tabs
-Bereits geöffnete v3-/v3.1-Tabs können vor dem nächsten Service-Worker-Update noch die alte UI zeigen. Der neue Service Worker räumt alte `gtavi-*` und `vicevault-*` Caches ab und navigiert offene Clients zur aktuellen UI. Nach Laden der v3.2.2-Oberfläche wird die Server-Version auf `pageshow`, `focus` und `visibilitychange` geprüft. Bei abweichender Version erfolgt eine Navigation zur aktuellen Ausgabe. Ein einmaliger Hard-Reload kann für alte Tabs dennoch erforderlich sein.
+## Cache und alte Tabs – Hotfix v3.2.4
+Der vorherige automatische Versionsabgleich navigierte bei einer inkonsistenten Release-Version ständig neu; ein älterer Service Worker navigierte ebenfalls Tabs bei Aktivierung. Dieser ungewollte Reload-Loop wurde behoben: **kein `location.replace` im Client, kein `clients.navigate` im Service Worker.** Der neue Service Worker räumt alte App-Caches beim Aktivieren ab und lädt Seiten nur noch über die Netzwerkverbindung. Es gibt keine automatische Aktualisierung bereits geöffneter Tabs mehr. Ein einmaliger Hard-Reload kann bei Nutzern mit dem alten Worker notwendig sein. Stand: 19.11.2026.
 
 ## Verbleibende Grenzen
 Es wurden keine weiteren glaubwürdig dokumentierten GTA-VI-Cheat-Inputs über die 19 vorhanden hinaus gefunden (Recherchestand 19.11.2026). Der Live-Browser-QA prüft die Website, nicht die tatsächliche Eingabe der Cheats auf PlayStation/Xbox. Zusätzliche E2E-Tests für Desktop konnten im Cloudflare-Browser zwischenzeitlich wegen Laufzeitgrenzen nicht vollständig abgeschlossen werden; mobile Testbreiten 340 und 440 px bestanden.
