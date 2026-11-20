@@ -1,5 +1,5 @@
-name: Vice Codes — Store preflight and test handoff
-# Recheck both official store records, signed artifacts and release readiness before any public submission.
+name: Vice Codes — Official App Store and Google Play submission
+# Explicit owner-requested submission: Publisher gates per-platform public review and Google production promotion.
 
 on:
   workflow_dispatch:
@@ -11,6 +11,7 @@ on:
           - preflight
           - upload_test
           - status
+          - submit_public
         required: true
         default: preflight
   push:
@@ -29,9 +30,9 @@ jobs:
     steps:
       - name: Check Publisher health
         run: curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 4 --max-time 20 https://publisher.smarbiz.sbs/healthz/
-      - name: Inspect new store app records and hand off to internal testing
+      - name: Submit verified Vice Codes app to App Review and Google Play production
         env:
-          STORE_MODE: ${{ inputs.mode || 'preflight' }}
+          STORE_MODE: ${{ inputs.mode || 'submit_public' }}
         run: |
           python3 - <<'PY'
           import json
@@ -41,7 +42,7 @@ jobs:
           from urllib.request import Request, urlopen
 
           mode = os.environ["STORE_MODE"]
-          if mode not in {"preflight", "upload_test", "status"}:
+          if mode not in {"preflight", "upload_test", "status", "submit_public"}:
               raise SystemExit("Invalid store mode")
           audience = "https://publisher.smarbiz.sbs"
           oidc = os.environ["ACTIONS_ID_TOKEN_REQUEST_URL"]
