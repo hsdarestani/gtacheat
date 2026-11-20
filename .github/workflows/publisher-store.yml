@@ -12,6 +12,7 @@ on:
           - upload_test
           - status
           - submit_public
+          - fix_apple_metadata
         required: true
         default: preflight
   push:
@@ -32,7 +33,7 @@ jobs:
         run: curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 4 --max-time 20 https://publisher.smarbiz.sbs/healthz/
       - name: Submit verified Vice Codes app to App Review and Google Play production
         env:
-          STORE_MODE: ${{ inputs.mode || 'status' }}
+          STORE_MODE: ${{ inputs.mode || 'fix_apple_metadata' }}
         run: |
           python3 - <<'PY'
           import json
@@ -42,7 +43,7 @@ jobs:
           from urllib.request import Request, urlopen
 
           mode = os.environ["STORE_MODE"]
-          if mode not in {"preflight", "upload_test", "status", "submit_public"}:
+          if mode not in {"preflight", "upload_test", "status", "submit_public", "fix_apple_metadata"}:
               raise SystemExit("Invalid store mode")
           audience = "https://publisher.smarbiz.sbs"
           oidc = os.environ["ACTIONS_ID_TOKEN_REQUEST_URL"]
