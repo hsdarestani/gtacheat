@@ -1,5 +1,5 @@
 name: Vice Codes — Build via A+ Publisher
-# iOS signing retry: explicitly patch actual Runner Release/Profile object IDs; validated in CI.
+# Store-ready 1.0.0 build 2: Android and iOS with in-app privacy/support links; no auto submission.
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
       build_number:
         description: "Positive build number"
         required: true
-        default: "1"
+        default: "2"
       platforms:
         description: "Build target (iOS requires linked Apple signing)"
         required: true
@@ -20,7 +20,7 @@ on:
           - android
           - ios
           - both
-        default: android
+        default: both
   push:
     branches: [main]
     paths:
@@ -47,8 +47,8 @@ jobs:
           PUBLISHER_ENDPOINT: https://publisher.smarbiz.sbs/apps/automation/release/
           SOURCE_COMMIT: ${{ github.sha }}
           APP_VERSION_NAME: ${{ inputs.version_name || '1.0.0' }}
-          APP_BUILD_NUMBER: ${{ inputs.build_number || '1' }}
-          APP_PLATFORMS: ${{ inputs.platforms || 'ios' }}
+          APP_BUILD_NUMBER: ${{ inputs.build_number || '2' }}
+          APP_PLATFORMS: ${{ inputs.platforms || 'both' }}
         run: |
           python3 - <<'PY'
           import json
