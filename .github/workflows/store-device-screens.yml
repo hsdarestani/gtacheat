@@ -141,7 +141,7 @@ jobs:
           flutter pub get
       - name: Capture actual Flutter-rendered app screens at Android portrait resolution
         working-directory: mobile
-        run: flutter test test/store_screenshots_test.dart
+        run: flutter test test/android_store_capture_test.dart --timeout=4m
       - name: Verify Android PNG dimensions and content
         run: |
           python3 - <<'PY'
