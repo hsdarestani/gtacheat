@@ -25,7 +25,8 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final key = GlobalKey();
       await tester.pumpWidget(RepaintBoundary(key: key, child: const ViceCodes()));
-      await tester.pumpAndSettle();
+      // Do not call pumpAndSettle on the infinite loading spinner.
+      await tester.pump();
 
       for (var i = 0; i < 30 && find.text('CHEAT-DATENBANK').evaluate().isEmpty; i++) {
         await tester.runAsync(() async {
