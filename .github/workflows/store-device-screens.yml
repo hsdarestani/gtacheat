@@ -9,9 +9,12 @@ on:
 
 permissions:
   contents: read
+  actions: read
+  id-token: write
 
 jobs:
   android-emulator:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -68,6 +71,7 @@ jobs:
           if-no-files-found: warn
 
   ios-simulator:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-latest
     timeout-minutes: 55
     steps:
@@ -119,3 +123,88 @@ jobs:
           path: mobile/store/screenshots/ios/*.png
           retention-days: 14
           if-no-files-found: warn
+
+  import-real-store-screenshots:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Follow the authorized emulator/simulator capture run
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 150); do
+            state=$(gh run view 44759343211 --repo hsdarestani/gtacheat --json status --jq .status)
+            echo "Screenshot source run status: $state"
+            if [ "$state" = "completed" ]; then break; fi
+            sleep 15
+          done
+          test "$(gh run view 44759343211 --repo hsdarestani/gtacheat --json status --jq .status)" = "completed"
+      - name: Retrieve images captured by real Flutter devices
+        run: |
+          mkdir -p incoming/android incoming/ios
+          gh run download 44759343211 --repo hsdarestani/gtacheat \
+            -n vice-codes-android-emulator-screens -D incoming/android || true
+          gh run download 44759343211 --repo hsdarestani/gtacheat \
+            -n vice-codes-ios-simulator-screens -D incoming/ios || true
+          find incoming -type f -name '*.png' -print
+      - name: Persist verified native screenshots in Publisher
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          from pathlib import Path
+          from urllib.error import HTTPError
+          from urllib.parse import urlencode
+          from urllib.request import Request, urlopen
+
+          audience = "https://publisher.smarbiz.sbs"
+          token_url = os.environ["ACTIONS_ID_TOKEN_REQUEST_URL"]
+          token_url += ("&" if "?" in token_url else "?") + urlencode({"audience": audience})
+          req = Request(token_url, headers={
+              "Authorization": "Bearer " + os.environ["ACTIONS_ID_TOKEN_REQUEST_TOKEN"],
+          })
+          with urlopen(req, timeout=25) as response:
+              token = json.load(response)["value"]
+          total = 0
+          for platform in ("ios", "android"):
+              files = sorted(Path("incoming", platform).rglob("*.png"))
+              if not files:
+                  print("No screenshots produced for " + platform)
+                  continue
+              for file in files:
+                  try:
+                      order = int(file.name[:2])
+                  except ValueError:
+                      raise SystemExit("Invalid screenshot file number " + file.name)
+                  payload = {
+                      "platform": platform,
+                      "index": order,
+                      "file": file.name,
+                      "png_base64": base64.b64encode(file.read_bytes()).decode("ascii"),
+                  }
+                  req = Request(
+                      audience + "/apps/automation/vice-codes-screenshot/",
+                      data=json.dumps(payload).encode("utf-8"), method="POST",
+                      headers={
+                          "Content-Type": "application/json",
+                          "Accept": "application/json",
+                          "User-Agent": "Mozilla/5.0 (compatible; APlusPublisher/1.0)",
+                          "X-GitHub-OIDC": token,
+                      },
+                  )
+                  try:
+                      with urlopen(req, timeout=90) as response:
+                          result = json.load(response)
+                  except HTTPError as exc:
+                      raise SystemExit("Publisher rejected " + file.name + ": HTTP " + str(exc.code) + " " + exc.read(800).decode("utf-8", "replace")) from None
+                  if not result.get("ok"):
+                      raise SystemExit("Screenshot upload failed: " + str(result))
+                  print(platform, file.name, "asset", result.get("asset_id"), "saved", not result.get("reused"))
+                  total += 1
+          if total == 0:
+              raise SystemExit("No real device screenshots were available; nothing was uploaded.")
+          print("Stored native screenshot count: " + str(total))
+          PY
