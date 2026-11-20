@@ -1,5 +1,5 @@
-name: Vice Codes — Store handoff (no public submission)
-# Verify Publisher's exact internal-release state after the store upload jobs; no public submission.
+name: Vice Codes — Store preflight and test handoff
+# Recheck both official store records, signed artifacts and release readiness before any public submission.
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
         run: curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 4 --max-time 20 https://publisher.smarbiz.sbs/healthz/
       - name: Inspect new store app records and hand off to internal testing
         env:
-          STORE_MODE: ${{ inputs.mode || 'status' }}
+          STORE_MODE: ${{ inputs.mode || 'preflight' }}
         run: |
           python3 - <<'PY'
           import json
