@@ -1,5 +1,5 @@
 name: Vice Codes — Store handoff (no public submission)
-# Internal uploads requested once. Subsequent push executions are read-only status checks.
+# Verify Publisher's exact internal-release state after the store upload jobs; no public submission.
 
 on:
   workflow_dispatch:
