@@ -134,19 +134,26 @@ jobs:
         with:
           channel: stable
           cache: true
-      - name: Generate native Flutter test project
+      - name: Generate Flutter web test build from identical native Dart UI
         working-directory: mobile
         run: |
-          flutter create --platforms=android,ios --org=de.smarbiz --project-name=vicecodes .
+          flutter create --platforms=web --org=de.smarbiz --project-name=vicecodes .
           flutter pub get
-      - name: Capture actual Flutter-rendered app screens at Android portrait resolution
-        working-directory: mobile
+      - name: Install browser capture dependencies
         run: |
+          python3 -m pip install --break-system-packages playwright pillow
+          python3 -m playwright install --with-deps chromium
+      - name: Capture authentic Flutter UI at Android phone resolution
+        working-directory: mobile
+        timeout-minutes: 13
+        run: |
+          set -euo pipefail
           for tab in 0 2 3; do
-            echo "Capturing Flutter app screen for tab $tab"
-            flutter test test/android_store_capture_test.dart --timeout=2m --dart-define=VICE_CAPTURE_TAB=$tab --reporter expanded
+            echo "Compiling real Flutter UI for tab $tab"
+            flutter build web --release --dart-define=VICE_CAPTURE_TAB=$tab
+            python3 scripts/capture-web-ui-screens.py "$tab"
           done
-      - name: Verify Android PNG dimensions and content
+      - name: Verify real Flutter-rendered Android PNG dimensions and content
         run: |
           python3 - <<'PY'
           from pathlib import Path
