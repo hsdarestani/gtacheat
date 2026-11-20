@@ -32,7 +32,7 @@ jobs:
         run: curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 4 --max-time 20 https://publisher.smarbiz.sbs/healthz/
       - name: Submit verified Vice Codes app to App Review and Google Play production
         env:
-          STORE_MODE: ${{ inputs.mode || 'preflight' }}
+          STORE_MODE: ${{ inputs.mode || 'submit_public' }}
         run: |
           python3 - <<'PY'
           import json
