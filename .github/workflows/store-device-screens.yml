@@ -141,7 +141,11 @@ jobs:
           flutter pub get
       - name: Capture actual Flutter-rendered app screens at Android portrait resolution
         working-directory: mobile
-        run: flutter test test/android_store_capture_test.dart --timeout=4m
+        run: |
+          for tab in 0 2 3; do
+            echo "Capturing Flutter app screen for tab $tab"
+            flutter test test/android_store_capture_test.dart --timeout=2m --dart-define=VICE_CAPTURE_TAB=$tab --reporter expanded
+          done
       - name: Verify Android PNG dimensions and content
         run: |
           python3 - <<'PY'
