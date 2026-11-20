@@ -200,3 +200,94 @@ jobs:
           print(json.dumps({'accepted':accepted},indent=2))
           if len(accepted)<3: raise SystemExit('Missing Android store screenshot artifacts')
           PY
+
+  ios-ipad-13:
+    if: github.event_name == 'push'
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Select actual 13-inch iPad simulator
+        run: |
+          python3 - <<'PY' >> "$GITHUB_ENV"
+          import json,subprocess
+          info=json.loads(subprocess.check_output(['xcrun','simctl','list','devices','available','-j']))
+          devices=[d for family in info['devices'].values() for d in family if d.get('isAvailable')]
+          candidates=[d for d in devices if 'iPad' in d['name'] and ('13-inch' in d['name'] or '12.9-inch' in d['name'])]
+          if not candidates:
+              raise SystemExit('No real iPad 13-inch or 12.9-inch simulator available on this Mac runner')
+          candidates.sort(key=lambda d: ('13-inch' not in d['name'], 'Pro' not in d['name'],d['name']))
+          print('IPAD_UDID='+candidates[0]['udid'])
+          print('IPAD_NAME='+candidates[0]['name'])
+          PY
+      - name: Build and capture actual native iPad 13-inch app UI
+        working-directory: mobile
+        run: |
+          set -euo pipefail
+          flutter create --platforms=ios --org=de.smarbiz --project-name=vicecodes .
+          flutter pub get
+          flutter build ios --simulator --debug --dart-define=VICE_CAPTURE_TAB=0
+          xcrun simctl boot "$IPAD_UDID" || true
+          xcrun simctl bootstatus "$IPAD_UDID" -b
+          xcrun simctl status_bar "$IPAD_UDID" override --time "9:41" --batteryState charged --batteryLevel 100 || true
+          xcrun simctl install "$IPAD_UDID" build/ios/iphonesimulator/Runner.app
+          xcrun simctl launch "$IPAD_UDID" de.smarbiz.vicecodes
+          sleep 12
+          mkdir -p store/screenshots/ios
+          xcrun simctl io "$IPAD_UDID" screenshot store/screenshots/ios/04-ipad-13-cheats.png
+          sips -g pixelWidth -g pixelHeight store/screenshots/ios/04-ipad-13-cheats.png
+          python3 - <<'PY'
+          from pathlib import Path
+          import struct
+          f=Path("store/screenshots/ios/04-ipad-13-cheats.png")
+          b=f.read_bytes()
+          w,h=struct.unpack('>II',b[16:24])
+          if (w,h) not in {(2048,2732),(2064,2752)}:
+              raise SystemExit("iPad screenshot has unsupported actual dimensions: "+str((w,h)))
+          print("Real Apple iPad simulator screenshot:",w,h,len(b))
+          PY
+      - name: Save real iPad screenshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vice-codes-ipad-13-real-screenshot
+          path: mobile/store/screenshots/ios/04-ipad-13-cheats.png
+          if-no-files-found: error
+          retention-days: 14
+      - name: Import 13-inch iPad screenshot into Publisher via scoped GitHub OIDC
+        run: |
+          python3 - <<'PY'
+          import base64, json, os
+          from pathlib import Path
+          from urllib.request import Request,urlopen
+          from urllib.parse import urlencode
+          from urllib.error import HTTPError
+          root='https://publisher.smarbiz.sbs'
+          src=Path('mobile/store/screenshots/ios/04-ipad-13-cheats.png')
+          url=os.environ['ACTIONS_ID_TOKEN_REQUEST_URL']
+          url+=('&' if '?' in url else '?')+urlencode({'audience':root})
+          with urlopen(Request(url,headers={
+              'Authorization':'Bearer '+os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN']
+          }),timeout=25) as r: token=json.load(r)['value']
+          body={
+              'platform':'ios','index':4,'file':src.name,
+              'device_type':'APP_IPAD_PRO_3GEN_129',
+              'png_base64':base64.b64encode(src.read_bytes()).decode(),
+          }
+          req=Request(root+'/apps/automation/vice-codes-screenshot/',
+              data=json.dumps(body).encode(),method='POST',headers={
+                  'Content-Type':'application/json','Accept':'application/json',
+                  'User-Agent':'Mozilla/5.0 (compatible; APlusPublisher/1.0)',
+                  'X-GitHub-OIDC':token,
+              })
+          try:
+              with urlopen(req,timeout=90) as r: response=json.load(r)
+          except HTTPError as exc:
+              raise SystemExit('iPad screenshot import failed: HTTP '+str(exc.code)+' '+exc.read(1300).decode('utf-8','replace')) from None
+          if not response.get('ok'): raise SystemExit('iPad screenshot was not accepted: '+str(response))
+          print(json.dumps(response,indent=2))
+          PY
+
