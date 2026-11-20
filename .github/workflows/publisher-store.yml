@@ -1,5 +1,5 @@
 name: Vice Codes — Official App Store and Google Play submission
-# Explicit owner-requested submission: Publisher gates per-platform public review and Google production promotion.
+# Read exact Apple review validation errors after first authorized public submission and verify Android listing.
 
 on:
   workflow_dispatch:
