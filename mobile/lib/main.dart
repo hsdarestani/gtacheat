@@ -59,7 +59,8 @@ class _MainScreenState extends State<MainScreen> {
   SharedPreferences? storage;
   final searchController = TextEditingController();
   String query = '';
-  int tab = 0, group = 0, console = 0;
+  // Screenshot-only compile flag; the signed release defaults to the normal Cheats tab.
+  int tab = const int.fromEnvironment('VICE_CAPTURE_TAB', defaultValue: 0), group = 0, console = 0;
   bool loading = true;
 
   @override
