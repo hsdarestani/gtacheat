@@ -405,6 +405,14 @@ class _MainScreenState extends State<MainScreen> {
     _button('PC GAMER QUELLE', Icons.open_in_new, () {
       launchUrl(Uri.parse('https://www.pcgamer.com/games/grand-theft-auto/gta-6-cheats-list/'), mode: LaunchMode.externalApplication);
     }),
+    const SizedBox(height: 10),
+    _button('DATENSCHUTZ', Icons.privacy_tip_outlined, () {
+      launchUrl(Uri.parse('https://gta.smarbiz.sbs/privacy'), mode: LaunchMode.externalApplication);
+    }),
+    const SizedBox(height: 10),
+    _button('SUPPORT', Icons.support_agent_outlined, () {
+      launchUrl(Uri.parse('https://gta.smarbiz.sbs/support'), mode: LaunchMode.externalApplication);
+    }),
   ]);
 
   @override
