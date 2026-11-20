@@ -1,5 +1,5 @@
 name: Vice Codes — Store handoff (no public submission)
-# One-time internal test upload for the verified Release 40; public submission prohibited.
+# Internal uploads requested once. Subsequent push executions are read-only status checks.
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
         run: curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 4 --max-time 20 https://publisher.smarbiz.sbs/healthz/
       - name: Inspect new store app records and hand off to internal testing
         env:
-          STORE_MODE: ${{ inputs.mode || 'upload_test' }}
+          STORE_MODE: ${{ inputs.mode || 'status' }}
         run: |
           python3 - <<'PY'
           import json
