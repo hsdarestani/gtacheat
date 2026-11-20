@@ -124,87 +124,75 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
 
-  import-real-store-screenshots:
+  import-flutter-rendered-screenshots:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    env:
-      GH_TOKEN: ${{ github.token }}
+    timeout-minutes: 25
     steps:
-      - name: Follow the authorized emulator/simulator capture run
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Generate native Flutter test project
+        working-directory: mobile
         run: |
-          set -euo pipefail
-          for attempt in $(seq 1 150); do
-            state=$(gh run view 44759343211 --repo hsdarestani/gtacheat --json status --jq .status)
-            echo "Screenshot source run status: $state"
-            if [ "$state" = "completed" ]; then break; fi
-            sleep 15
-          done
-          test "$(gh run view 44759343211 --repo hsdarestani/gtacheat --json status --jq .status)" = "completed"
-      - name: Retrieve images captured by real Flutter devices
-        run: |
-          mkdir -p incoming/android incoming/ios
-          gh run download 44759343211 --repo hsdarestani/gtacheat \
-            -n vice-codes-android-emulator-screens -D incoming/android || true
-          gh run download 44759343211 --repo hsdarestani/gtacheat \
-            -n vice-codes-ios-simulator-screens -D incoming/ios || true
-          find incoming -type f -name '*.png' -print
-      - name: Persist verified native screenshots in Publisher
+          flutter create --platforms=android,ios --org=de.smarbiz --project-name=vicecodes .
+          flutter pub get
+      - name: Capture actual Flutter-rendered app screens at Android portrait resolution
+        working-directory: mobile
+        run: flutter test test/store_screenshots_test.dart
+      - name: Verify Android PNG dimensions and content
         run: |
           python3 - <<'PY'
-          import base64
-          import json
-          import os
           from pathlib import Path
-          from urllib.error import HTTPError
+          import struct
+          files=sorted(Path('mobile/store/screenshots/android').glob('*.png'))
+          if len(files)<3: raise SystemExit('At least 3 actual Flutter UI screens required')
+          for f in files:
+              b=f.read_bytes()
+              if not b.startswith(b'\x89PNG\r\n\x1a\n') or len(b)<20_000:
+                  raise SystemExit('Not a valid screenshot: '+str(f))
+              w,h=struct.unpack('>II',b[16:24])
+              if (w,h)!=(1080,2400):
+                  raise SystemExit('Incorrect actual Flutter screenshot dimensions: '+str(f)+' '+str((w,h)))
+              print(str(f),w,h,len(b))
+          PY
+      - name: Save app-rendered Android screenshot artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vice-codes-android-flutter-rendered-screens
+          path: mobile/store/screenshots/android/*.png
+          retention-days: 14
+          if-no-files-found: error
+      - name: Upload Android screenshots to Publisher with scoped GitHub OIDC
+        run: |
+          python3 - <<'PY'
+          import base64, json, os
+          from pathlib import Path
           from urllib.parse import urlencode
           from urllib.request import Request, urlopen
-
-          audience = "https://publisher.smarbiz.sbs"
-          token_url = os.environ["ACTIONS_ID_TOKEN_REQUEST_URL"]
-          token_url += ("&" if "?" in token_url else "?") + urlencode({"audience": audience})
-          req = Request(token_url, headers={
-              "Authorization": "Bearer " + os.environ["ACTIONS_ID_TOKEN_REQUEST_TOKEN"],
-          })
-          with urlopen(req, timeout=25) as response:
-              token = json.load(response)["value"]
-          total = 0
-          for platform in ("ios", "android"):
-              files = sorted(Path("incoming", platform).rglob("*.png"))
-              if not files:
-                  print("No screenshots produced for " + platform)
-                  continue
-              for file in files:
-                  try:
-                      order = int(file.name[:2])
-                  except ValueError:
-                      raise SystemExit("Invalid screenshot file number " + file.name)
-                  payload = {
-                      "platform": platform,
-                      "index": order,
-                      "file": file.name,
-                      "png_base64": base64.b64encode(file.read_bytes()).decode("ascii"),
-                  }
-                  req = Request(
-                      audience + "/apps/automation/vice-codes-screenshot/",
-                      data=json.dumps(payload).encode("utf-8"), method="POST",
-                      headers={
-                          "Content-Type": "application/json",
-                          "Accept": "application/json",
-                          "User-Agent": "Mozilla/5.0 (compatible; APlusPublisher/1.0)",
-                          "X-GitHub-OIDC": token,
-                      },
-                  )
-                  try:
-                      with urlopen(req, timeout=90) as response:
-                          result = json.load(response)
-                  except HTTPError as exc:
-                      raise SystemExit("Publisher rejected " + file.name + ": HTTP " + str(exc.code) + " " + exc.read(800).decode("utf-8", "replace")) from None
-                  if not result.get("ok"):
-                      raise SystemExit("Screenshot upload failed: " + str(result))
-                  print(platform, file.name, "asset", result.get("asset_id"), "saved", not result.get("reused"))
-                  total += 1
-          if total == 0:
-              raise SystemExit("No real device screenshots were available; nothing was uploaded.")
-          print("Stored native screenshot count: " + str(total))
+          from urllib.error import HTTPError
+          audience='https://publisher.smarbiz.sbs'
+          url=os.environ['ACTIONS_ID_TOKEN_REQUEST_URL']
+          url+=('&' if '?' in url else '?')+urlencode({'audience':audience})
+          with urlopen(Request(url,headers={'Authorization':'Bearer '+os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN']}),timeout=25) as r:
+              token=json.load(r)['value']
+          sources=sorted(Path('mobile/store/screenshots/android').glob('*.png'))
+          accepted=[]
+          for f in sources:
+              idx=int(f.name[:2])
+              body={'platform':'android','index':idx,'file':f.name,'png_base64':base64.b64encode(f.read_bytes()).decode('ascii')}
+              req=Request(audience+'/apps/automation/vice-codes-screenshot/',data=json.dumps(body).encode(),method='POST',headers={
+                  'Content-Type':'application/json','Accept':'application/json',
+                  'User-Agent':'Mozilla/5.0 (compatible; APlusPublisher/1.0)',
+                  'X-GitHub-OIDC':token})
+              try:
+                  with urlopen(req,timeout=90) as response: result=json.load(response)
+              except HTTPError as exc:
+                  raise SystemExit('Publisher rejected '+f.name+': HTTP '+str(exc.code)+' '+exc.read(1200).decode('utf-8','replace')) from None
+              if not result.get('ok'): raise SystemExit('Store screenshot not accepted: '+str(result))
+              accepted.append({'source':f.name,'asset_id':result['asset_id'],'reused':result.get('reused')})
+          print(json.dumps({'accepted':accepted},indent=2))
+          if len(accepted)<3: raise SystemExit('Missing Android store screenshot artifacts')
           PY
