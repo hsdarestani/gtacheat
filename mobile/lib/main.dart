@@ -202,8 +202,22 @@ class _MainScreenState extends State<MainScreen> {
                 if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('Code kopiert')));
               }, highlighted: true)),
               const SizedBox(width: 9),
-              Expanded(child: _button('TEILEN', Icons.ios_share, () {
-                Share.share(cheat.title + '\n' + cheat.code + '\nVice Codes · Inoffizieller GTA VI Guide');
+              Expanded(child: Builder(builder: (shareContext) {
+                return _button('TEILEN', Icons.ios_share, () async {
+                  final button = shareContext.findRenderObject() as RenderBox;
+                  final origin = button.localToGlobal(Offset.zero) & button.size;
+                  try {
+                    await Share.share(
+                      '${cheat.title}\n${cheat.code}\nVice Codes · Inoffizieller GTA VI Guide',
+                      sharePositionOrigin: origin,
+                    );
+                  } on PlatformException {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Teilen fehlgeschlagen')),
+                    );
+                  }
+                });
               })),
             ]),
             const SizedBox(height: 15),
